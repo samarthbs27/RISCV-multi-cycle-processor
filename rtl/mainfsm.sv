@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 module mainfsm(input clk,
                input reset,
                input logic [6:0] op,
@@ -26,8 +27,9 @@ module mainfsm(input clk,
 	localparam [3:0] ALUWB = 8;
 	localparam [3:0] BEQ = 9;
 	localparam [3:0] JAL = 10;
-	localparam [3:0] JALR1 = 11; // write return addr (OldPC+4) to rd
-	localparam [3:0] JALR2 = 12; // jump to rs1+imm
+	localparam [3:0] JALR1     = 11; // write return addr (OldPC+4) to rd
+	localparam [3:0] JALR2     = 12; // jump to rs1+imm
+	localparam [3:0] LUI_STATE = 13; // lui: compute pass-B(U-imm), then ALUWB
 	
 	always @(posedge clk, posedge reset)
 	   if (reset)
@@ -40,13 +42,17 @@ module mainfsm(input clk,
             FETCH: nextstate = DECODE;
             DECODE:
                 case(op)
-                    7'b0000011: nextstate = MEMADR;   // lw
-                    7'b0100011: nextstate = MEMADR;   // sw
-                    7'b0110011: nextstate = EXECUTER; // R-Type
-                    7'b1100011: nextstate = BEQ;      // branches
-                    7'b0010011: nextstate = EXECUTEI; // I-Type ALU
-                    7'b1101111: nextstate = JAL;      // jal
-                    7'b1100111: nextstate = JALR1;    // jalr
+                    7'b0000011: nextstate = MEMADR;    // lw/lb/lh/lbu/lhu
+                    7'b0100011: nextstate = MEMADR;    // sw/sb/sh
+                    7'b0110011: nextstate = EXECUTER;  // R-type
+                    7'b1100011: nextstate = BEQ;       // branches
+                    7'b0010011: nextstate = EXECUTEI;  // I-type ALU
+                    7'b1101111: nextstate = JAL;       // jal
+                    7'b1100111: nextstate = JALR1;     // jalr
+                    7'b0010111: nextstate = ALUWB;     // auipc
+                    7'b0110111: nextstate = LUI_STATE; // lui
+                    7'b0001111: nextstate = FETCH;     // fence: NOP
+                    7'b1110011: begin $finish; nextstate = FETCH; end // ecall/ebreak
                     default:    nextstate = FETCH;
                 endcase
             MEMADR:
@@ -63,9 +69,10 @@ module mainfsm(input clk,
             BEQ: nextstate = FETCH;
             EXECUTEI: nextstate = ALUWB;
             JAL:   nextstate = ALUWB;
-            JALR1: nextstate = JALR2;
-            JALR2: nextstate = FETCH;
-            default: nextstate = FETCH;
+            JALR1:     nextstate = JALR2;
+            JALR2:     nextstate = FETCH;
+            LUI_STATE: nextstate = ALUWB;
+            default:   nextstate = FETCH;
         endcase
      
     always @(*)
@@ -82,9 +89,10 @@ module mainfsm(input clk,
 			ALUWB: controls =    14'b0_0_0_1_0_x_00_xx_xx_xx;
 			BEQ: controls =      14'b0_1_0_0_0_x_00_10_00_01;
 			JAL:   controls =    14'b1_0_0_0_0_x_00_01_10_00;
-			JALR1: controls =    14'b0_0_0_1_0_x_10_01_10_00; // rd←OldPC+4 (return addr)
-			JALR2: controls =    14'b1_0_0_0_0_x_10_10_01_00; // PC←rs1+imm (jump target)
-			default: controls =  14'b0_0_0_0_0_x_xx_xx_xx_xx;
+			JALR1:     controls = 14'b0_0_0_1_0_x_10_01_10_00; // rd←OldPC+4 (return addr)
+			JALR2:     controls = 14'b1_0_0_0_0_x_10_10_01_00; // PC←rs1+imm (jump target)
+			LUI_STATE: controls = 14'b0_0_0_0_0_0_00_00_01_11; // ALUSrcB=ImmExt, ALUOp=11→pass B
+			default:   controls = 14'b0_0_0_0_0_x_xx_xx_xx_xx;
         endcase
     
     assign {PCUpdate, Branch, MemWrite, RegWrite, IRWrite, AdrSrc, ResultSrc, ALUSrcA, ALUSrcB, ALUOp} = controls;

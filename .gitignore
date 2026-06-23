@@ -3,6 +3,7 @@ sim/xsim.dir/
 sim/*.wdb
 sim/*.pb
 sim/*.log
+sim/*.txt
 sim/*.jou
 sim/*.backup.jou
 sim/*.backup.log
@@ -13,6 +14,12 @@ sim/dfx_runtime.txt
 
 # Xsim compiled work library if generated at root
 xsim.dir/
+
+# Xsim artifacts produced when accidentally run from repo root instead of sim/
+xelab.log
+xelab.pb
+xvlog.log
+xvlog.pb
 
 # WSL / Linux build artifacts (from riscv-gcc compilation)
 docs/*.elf

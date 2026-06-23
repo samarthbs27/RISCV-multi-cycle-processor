@@ -4,14 +4,15 @@ module datapath(input logic 	    clk, reset,
                 input logic 	    IRWrite, // Multi cycle implementation
                 input logic  [31:0] Instr_in, // Multi cycle modification
                 input logic 	    RegWrite,
-                input logic  [1:0]  ImmSrc, // Multi cycle modification
+                input logic  [2:0]  ImmSrc, // Multi cycle modification
                 input logic  [1:0]  AluSrcA, AluSrcB,
                 input logic  [3:0]  ALUControl,
                 input logic  [1:0]  ResultSrc,         
                 output logic [31:0] adr,
                 output logic [31:0] WriteData, Result, Instr,
                 output logic 	    Zero,
-                output logic 	    branch_lesser);
+                output logic 	    branch_lesser,
+                output logic 	    branch_lesser_u);
                 
     logic [31:0] OldPC;
     logic [31:0] PC, Data; // Multi cycle implementation
@@ -38,7 +39,7 @@ module datapath(input logic 	    clk, reset,
 
     mux3    #(.WIDTH(32)) srcamux(.d0(PC), .d1(OldPC), .d2(Addr), .s(AluSrcA), .y(SrcA)); // Multi cycle implementation
     mux3    #(.WIDTH(32)) srcbmux(.d0(WriteData), .d1(ImmExt), .d2(32'd4), .s(AluSrcB), .y(SrcB)); // Multi cycle implementation
-    alu                   alu(.a(SrcA), .b(SrcB), .alucontrol(ALUControl), .result(ALUResult), .zero(Zero), .branch_lesser(branch_lesser)); // Multi cycle modification
+    alu                   alu(.a(SrcA), .b(SrcB), .alucontrol(ALUControl), .result(ALUResult), .zero(Zero), .branch_lesser(branch_lesser), .branch_lesser_u(branch_lesser_u));
     flopr   #(.WIDTH(32)) aluout(.clk(clk), .reset(reset), .d(ALUResult), .q(ALUOutput)); // Multi cycle implementation
     mux3    #(.WIDTH(32)) resultmux(.d0(ALUOutput), .d1(Data), .d2(ALUResult), .s(ResultSrc), .y(Result)); // Multi cycle implementation
     

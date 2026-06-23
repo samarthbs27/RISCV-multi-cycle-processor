@@ -1,6 +1,7 @@
 module aludec(input logic opb5,
               input logic [2:0] funct3,
               input logic funct7b5,
+              input logic funct7b0,
               input logic [1:0] ALUOp,
               output logic [3:0] ALUControl);
 
@@ -11,13 +12,17 @@ module aludec(input logic opb5,
         case(ALUOp)
             2'b00:   ALUControl = 4'b0000; // addition (lw/sw address)
             2'b01:   ALUControl = 4'b0001; // subtraction (branch compare)
+            2'b11:   ALUControl = 4'b1001; // pass B (lui)
             default: case(funct3)          // R-type or I-type ALU
-                3'b000: if (RtypeSub)
+                3'b000: if (funct7b0 & opb5)
+                            ALUControl = 4'b1100; // mul (RV32M)
+                        else if (RtypeSub)
                             ALUControl = 4'b0001; // sub
                         else
                             ALUControl = 4'b0000; // add, addi
-                3'b001:     ALUControl = 4'b0110; // sll, slli
-                3'b010:     ALUControl = 4'b0101; // slt, slti
+                3'b001: ALUControl = (funct7b0 & opb5) ? 4'b1101 : 4'b0110; // mulh  or sll/slli
+                3'b010: ALUControl = (funct7b0 & opb5) ? 4'b1110 : 4'b0101; // mulhsu or slt/slti
+                3'b011: ALUControl = (funct7b0 & opb5) ? 4'b1111 : 4'b1011; // mulhu  or sltu/sltiu
                 3'b100:     ALUControl = 4'b0100; // xor, xori
                 3'b101: if (funct7b5)
                             ALUControl = 4'b1000; // sra, srai

@@ -26,7 +26,8 @@ module mainfsm(input clk,
 	localparam [3:0] ALUWB = 8;
 	localparam [3:0] BEQ = 9;
 	localparam [3:0] JAL = 10;
-	localparam [3:0] UNKNOWN = 11;
+	localparam [3:0] JALR1 = 11; // write return addr (OldPC+4) to rd
+	localparam [3:0] JALR2 = 12; // jump to rs1+imm
 	
 	always @(posedge clk, posedge reset)
 	   if (reset)
@@ -35,21 +36,24 @@ module mainfsm(input clk,
 	       state <= nextstate;
 	       
     always @(*)
-        casex (state)
+        case (state)
             FETCH: nextstate = DECODE;
-            DECODE: 
+            DECODE:
                 case(op)
-                    7'b0000011: nextstate = MEMADR; // lw
-                    7'b0100011: nextstate = MEMADR; // sw
+                    7'b0000011: nextstate = MEMADR;   // lw
+                    7'b0100011: nextstate = MEMADR;   // sw
                     7'b0110011: nextstate = EXECUTER; // R-Type
-                    7'b1100011: nextstate = BEQ; // beq
-                    7'b0010011: nextstate = EXECUTEI; // I-Type
-                    7'b1101111: nextstate = JAL; // jal
+                    7'b1100011: nextstate = BEQ;      // branches
+                    7'b0010011: nextstate = EXECUTEI; // I-Type ALU
+                    7'b1101111: nextstate = JAL;      // jal
+                    7'b1100111: nextstate = JALR1;    // jalr
+                    default:    nextstate = FETCH;
                 endcase
-            MEMADR: 
+            MEMADR:
                 case(op)
                     7'b0000011: nextstate = MEMRD; // lw
-                    7'b0100011:nextstate = MEMWR; // sw
+                    7'b0100011: nextstate = MEMWR; // sw
+                    default:    nextstate = FETCH;
                 endcase
             MEMRD: nextstate = MEMWB;
             MEMWB: nextstate = FETCH;
@@ -58,7 +62,9 @@ module mainfsm(input clk,
             ALUWB: nextstate = FETCH;
             BEQ: nextstate = FETCH;
             EXECUTEI: nextstate = ALUWB;
-            JAL: nextstate = ALUWB;
+            JAL:   nextstate = ALUWB;
+            JALR1: nextstate = JALR2;
+            JALR2: nextstate = FETCH;
             default: nextstate = FETCH;
         endcase
      
@@ -75,7 +81,9 @@ module mainfsm(input clk,
 			EXECUTEI: controls = 14'b0_0_0_0_0_x_xx_10_01_10; // ALUop will look at funct3
 			ALUWB: controls =    14'b0_0_0_1_0_x_00_xx_xx_xx;
 			BEQ: controls =      14'b0_1_0_0_0_x_00_10_00_01;
-			JAL: controls =      14'b1_0_0_0_0_x_00_01_10_00;
+			JAL:   controls =    14'b1_0_0_0_0_x_00_01_10_00;
+			JALR1: controls =    14'b0_0_0_1_0_x_10_01_10_00; // rd←OldPC+4 (return addr)
+			JALR2: controls =    14'b1_0_0_0_0_x_10_10_01_00; // PC←rs1+imm (jump target)
 			default: controls =  14'b0_0_0_0_0_x_xx_xx_xx_xx;
         endcase
     

@@ -4,7 +4,7 @@ module controller(input clk, reset,
                   input logic funct7b5,
                   input logic Zero,
                   output logic [1:0] ImSrc,
-                  output logic [2:0] ALUControl,
+                  output logic [3:0] ALUControl,
                   output logic RegWrite,
                   output logic MemWrite,
                   output logic IRWrite,
@@ -25,9 +25,10 @@ module controller(input clk, reset,
     mainfsm md(.clk(clk), .reset(reset), .op(op), .RegWrite(RegWrite), .MemWrite(MemWrite), .IRWrite(IRWrite), .Branch(Branch), .PCUpdate(PCUpdate), 
                .ALUSrcA(ALUSrcA), .ALUSrcB(ALUSrcB), .AdrSrc(AdrSrc), .ResultSrc(ResultSrc), .ALUOp(ALUOp));
     
-    assign PCWrite = (Branch & (funct3 == 3'b000) & Zero) |             // BEQ
-                     (Branch & (funct3 == 3'b100) & branch_lesser) |    // BLT
-                     (Branch & (funct3 == 3'b101) & ~branch_lesser) |   // BGE
+    assign PCWrite = (Branch & (funct3 == 3'b000) &  Zero)          |  // BEQ
+                     (Branch & (funct3 == 3'b001) & ~Zero)          |  // BNE
+                     (Branch & (funct3 == 3'b100) &  branch_lesser) |  // BLT
+                     (Branch & (funct3 == 3'b101) & ~branch_lesser) |  // BGE
                      PCUpdate;
 //    assign PCWrite = (Branch & (Zero ^ funct3[0])) | PCUpdate;
     

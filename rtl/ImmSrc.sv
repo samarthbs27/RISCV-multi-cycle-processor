@@ -14,6 +14,7 @@ module ImmSrc(input logic [6:0] op,
             7'b1100011: controls = 2'b10; // beq
             7'b0010011: controls = 2'b00; // I-type ALU
             7'b1101111: controls = 2'b11; // jal
+            7'b1100111: controls = 2'b00; // jalr (I-type immediate)
             default: controls = 2'bxx; // ???
         endcase
         

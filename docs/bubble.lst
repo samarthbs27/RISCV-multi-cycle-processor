@@ -1,0 +1,82 @@
+
+bubble.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	fd010113          	addi	x2,x2,-48
+   4:	02112623          	sw	x1,44(x2)
+   8:	02812423          	sw	x8,40(x2)
+   c:	03010413          	addi	x8,x2,48
+  10:	00300793          	addi	x15,x0,3
+  14:	fcf42823          	sw	x15,-48(x8)
+  18:	00500793          	addi	x15,x0,5
+  1c:	fcf42a23          	sw	x15,-44(x8)
+  20:	00100793          	addi	x15,x0,1
+  24:	fcf42c23          	sw	x15,-40(x8)
+  28:	00200793          	addi	x15,x0,2
+  2c:	fcf42e23          	sw	x15,-36(x8)
+  30:	00400793          	addi	x15,x0,4
+  34:	fef42023          	sw	x15,-32(x8)
+  38:	fe042423          	sw	x0,-24(x8)
+  3c:	fe042623          	sw	x0,-20(x8)
+  40:	0c80006f          	jal	x0,108 <_start+0x108>
+  44:	fe042423          	sw	x0,-24(x8)
+  48:	0a00006f          	jal	x0,e8 <_start+0xe8>
+  4c:	fe842703          	lw	x14,-24(x8)
+  50:	fd040793          	addi	x15,x8,-48
+  54:	00271713          	slli	x14,x14,0x2
+  58:	00f707b3          	add	x15,x14,x15
+  5c:	0007a703          	lw	x14,0(x15)
+  60:	fe842783          	lw	x15,-24(x8)
+  64:	00178693          	addi	x13,x15,1
+  68:	fd040793          	addi	x15,x8,-48
+  6c:	00269693          	slli	x13,x13,0x2
+  70:	00f687b3          	add	x15,x13,x15
+  74:	0007a783          	lw	x15,0(x15)
+  78:	06e7d263          	bge	x15,x14,dc <_start+0xdc>
+  7c:	fe842703          	lw	x14,-24(x8)
+  80:	fd040793          	addi	x15,x8,-48
+  84:	00271713          	slli	x14,x14,0x2
+  88:	00f707b3          	add	x15,x14,x15
+  8c:	0007a783          	lw	x15,0(x15)
+  90:	fef42423          	sw	x15,-24(x8)
+  94:	fe842783          	lw	x15,-24(x8)
+  98:	00178713          	addi	x14,x15,1
+  9c:	fd040793          	addi	x15,x8,-48
+  a0:	00271713          	slli	x14,x14,0x2
+  a4:	00f707b3          	add	x15,x14,x15
+  a8:	0007a703          	lw	x14,0(x15)
+  ac:	fe842683          	lw	x13,-24(x8)
+  b0:	fd040793          	addi	x15,x8,-48
+  b4:	00269693          	slli	x13,x13,0x2
+  b8:	00f687b3          	add	x15,x13,x15
+  bc:	00e7a023          	sw	x14,0(x15)
+  c0:	fe842783          	lw	x15,-24(x8)
+  c4:	00178693          	addi	x13,x15,1
+  c8:	fe842703          	lw	x14,-24(x8)
+  cc:	fd040793          	addi	x15,x8,-48
+  d0:	00269693          	slli	x13,x13,0x2
+  d4:	00f687b3          	add	x15,x13,x15
+  d8:	00e7a023          	sw	x14,0(x15)
+  dc:	fe842783          	lw	x15,-24(x8)
+  e0:	00178793          	addi	x15,x15,1
+  e4:	fef42423          	sw	x15,-24(x8)
+  e8:	00400713          	addi	x14,x0,4
+  ec:	fec42783          	lw	x15,-20(x8)
+  f0:	40f707b3          	sub	x15,x14,x15
+  f4:	fe842703          	lw	x14,-24(x8)
+  f8:	f4f74ae3          	blt	x14,x15,4c <_start+0x4c>
+  fc:	fec42783          	lw	x15,-20(x8)
+ 100:	00178793          	addi	x15,x15,1
+ 104:	fef42623          	sw	x15,-20(x8)
+ 108:	fec42703          	lw	x14,-20(x8)
+ 10c:	00300793          	addi	x15,x0,3
+ 110:	f2e7dae3          	bge	x15,x14,44 <_start+0x44>
+ 114:	00000793          	addi	x15,x0,0
+ 118:	00078513          	addi	x10,x15,0
+ 11c:	02c12083          	lw	x1,44(x2)
+ 120:	02812403          	lw	x8,40(x2)
+ 124:	03010113          	addi	x2,x2,48
+ 128:	00008067          	jalr	x0,0(x1)

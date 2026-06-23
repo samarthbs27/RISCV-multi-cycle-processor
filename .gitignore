@@ -1,0 +1,27 @@
+# Xsim (Vivado) simulation artifacts
+sim/xsim.dir/
+sim/*.wdb
+sim/*.pb
+sim/*.log
+sim/*.jou
+sim/*.backup.jou
+sim/*.backup.log
+sim/dfx_runtime.txt
+
+# Stray waveform files at root
+*.wdb
+
+# Xsim compiled work library if generated at root
+xsim.dir/
+
+# WSL / Linux build artifacts (from riscv-gcc compilation)
+docs/*.elf
+docs/*.bin
+docs/*.o
+
+# Claude AI working notes (machine-specific paths, internal notes)
+CLAUDE.md
+
+# OS artifacts
+.DS_Store
+Thumbs.db

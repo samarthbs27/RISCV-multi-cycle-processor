@@ -6,7 +6,7 @@ module datapath(input logic 	    clk, reset,
                 input logic 	    RegWrite,
                 input logic  [1:0]  ImmSrc, // Multi cycle modification
                 input logic  [1:0]  AluSrcA, AluSrcB,
-                input logic  [2:0]  ALUControl,
+                input logic  [3:0]  ALUControl,
                 input logic  [1:0]  ResultSrc,         
                 output logic [31:0] adr,
                 output logic [31:0] WriteData, Result, Instr,

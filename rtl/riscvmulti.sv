@@ -6,7 +6,7 @@ module riscvmulti(input logic 	      clk, reset,
                    
     logic 	 RegWrite, Zero, IRWrite, AdrSrc, PCWrite, branch_lesser;
     logic [1:0]  ALUSrcA, ALUSrcB, ResultSrc, ImmSrc;
-    logic [2:0]  ALUControl;
+    logic [3:0]  ALUControl;
     logic [31:0] datapath_Instr;
     
     controller c(.clk(clk), .reset(reset), .op(datapath_Instr[6:0]), .funct3(datapath_Instr[14:12]), .funct7b5(datapath_Instr[30]), 

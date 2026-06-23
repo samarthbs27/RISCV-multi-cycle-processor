@@ -27,7 +27,4 @@ module regfile(input  logic        clk, reset,
     assign rd1 = (a1 == 5'b0) ? 32'b0 : rf[a1];
     assign rd2 = (a2 == 5'b0) ? 32'b0 : rf[a2];
         
-   initial begin
-       $monitor("RegFile: At time %t, wd3 = %0h, we3 = %0h", $time, wd3, we3);
-   end
 endmodule
